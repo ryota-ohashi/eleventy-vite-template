@@ -1,30 +1,33 @@
-const fs = require("fs");
-const path = require("path");
 const config = require("./config");
 
 module.exports = (eleventyConfig) => {
-	eleventyConfig.addPassthroughCopy({ resource: "./" });
+	// 静的ファイルのコピー
+	eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
 
-	// 開発環境でのみBrowserSyncの設定を適用
+	// 開発環境の設定
 	if (process.env.ELEVENTY_ENV !== 'production') {
 		eleventyConfig.setBrowserSyncConfig({
-			server: {
-				baseDir: 'public'
-			},
+			server: "public",
 			files: [
 				'public/**/*',
 				'src/site/**/*.njk',
 				'src/styles/**/*.scss',
 				'src/scripts/**/*.js'
 			],
-			open: true,
-			ghostMode: false,
-			notify: true,
+
 			port: 8080,
-			reloadDelay: 0
+			ui: false,
+			ghostMode: false,
+			open: true,
+			notify: false,
+			middleware: [
+				function(req, res, next) {
+					res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+					next();
+				}
+			]
 		});
 
-		// 開発環境でのみウォッチ対象を追加
 		eleventyConfig.addWatchTarget('./src/site/');
 		eleventyConfig.addWatchTarget('./src/styles/');
 		eleventyConfig.addWatchTarget('./src/scripts/');
@@ -33,13 +36,14 @@ module.exports = (eleventyConfig) => {
 	return {
 		dir: {
 			input: "src/site/pages",
-			includes: "../inc",
-			layouts: "../inc/layouts",
+			includes: "../includes",
+			layouts: "../includes/layouts",
 			data: "../data",
-			output: "public",
+			output: "public"
 		},
-		dataTemplateEngine: "njk",
+		templateFormats: ["njk", "md"],
 		htmlTemplateEngine: "njk",
-		pathPrefix: config.pathPrefix,
+		markdownTemplateEngine: "njk",
+		pathPrefix: config.pathPrefix
 	};
 };

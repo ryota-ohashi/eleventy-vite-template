@@ -1,8 +1,8 @@
 module.exports = {
 	prefix: "u-",
   content: [
-    "./src/**/*.{html,njk,js,scss}",
-    "./src/site/**/*.njk"
+    "./src/site/**/*.{html,njk,js}",
+    "./src/scripts/**/*.js"
   ],
   theme: {
 		screens: {
@@ -15,4 +15,5 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+  mode: 'jit',
 };

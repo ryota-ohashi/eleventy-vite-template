@@ -2,8 +2,9 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig(({ command }) => {
-  const config = {
+  return {
     root: 'src',
+    base: command === 'serve' ? '' : '/',
     build: {
       outDir: '../public',
       emptyOutDir: true,
@@ -12,20 +13,26 @@ export default defineConfig(({ command }) => {
           main: resolve(__dirname, 'src/scripts/main.js')
         },
         output: {
-          entryFileNames: 'assets/js/[name].js',
-          chunkFileNames: 'assets/js/[name].js',
-          assetFileNames: 'assets/[ext]/[name].[ext]'
+          entryFileNames: 'assets/js/[name].[hash].js',
+          chunkFileNames: 'assets/js/[name].[hash].js',
+          assetFileNames: ({ name }) => {
+            if (/\.(gif|jpe?g|png|svg)$/.test(name ?? '')) {
+              return 'assets/images/[name].[hash][extname]';
+            }
+            if (/\.css$/.test(name ?? '')) {
+              return 'assets/css/[name].[hash][extname]';
+            }
+            return 'assets/[name].[hash][extname]';
+          }
         }
+      }
+    },
+    server: {
+      port: 3000,
+      strictPort: true,
+      watch: {
+        usePolling: true
       }
     }
   };
-
-  // 開発環境でのみwatch設定を追加
-  if (command === 'serve') {
-    config.build.watch = {
-      include: ['src/**/*.{scss,css,js,njk}']
-    };
-  }
-
-  return config;
 });

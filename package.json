@@ -1,7 +1,8 @@
 {
   "scripts": {
-    "dev": "concurrently --raw \"vite build --watch\" \"eleventy --serve\"",
-    "build": "vite build && cross-env ELEVENTY_ENV=production eleventy && node beautify.js",
+    "dev": "cross-env ELEVENTY_ENV=development concurrently \"vite\" \"eleventy --serve\"",
+    "build": "cross-env ELEVENTY_ENV=production npm run clean && vite build && eleventy && node beautify.js",
+    "clean": "rimraf public",
     "html:lint": "markuplint src/site/**/*.njk"
   },
   "dependencies": {
